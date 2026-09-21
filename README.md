@@ -1,5 +1,7 @@
 # HydroSync : Saisie terrain hors ligne
 
+  créer raccourci depuis : https://tolletg.github.io/HydroSync/
+
     index.html            le formulaire
     app.js                saisie, file d'attente, synchronisation, export CSV
     sw.js                 cache hors ligne
