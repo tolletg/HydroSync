@@ -1,0 +1,14 @@
+{
+  "name": "Tournée Ouysse",
+  "short_name": "Tournée",
+  "description": "Saisie des mesures ponctuelles sur le terrain, hors ligne",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6f7f8",
+  "theme_color": "#0f766e",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

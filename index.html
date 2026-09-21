@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tournée Ouysse</title>
+<link rel="icon" href="icone.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f766e">
+<style>
+  :root { color-scheme: light dark; --fond: #f6f7f8; --carte: #fff; --trait: #d6d9dd;
+          --texte: #14181c; --doux: #5c6670; --accent: #0f766e; --alerte: #b45309; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fond: #14181c; --carte: #1c2126; --trait: #2c333a; --texte: #e8eaed;
+            --doux: #9aa4ae; --accent: #2dd4bf; --alerte: #f59e0b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 0 12px env(safe-area-inset-bottom) 12px; background: var(--fond);
+         color: var(--texte); font: 16px/1.4 system-ui, -apple-system, sans-serif; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--fond);
+           padding: calc(10px + env(safe-area-inset-top)) 0 8px; }
+  h1 { font-size: 18px; margin: 0 0 6px; }
+  .etat { font-size: 13px; color: var(--doux); }
+  .etat b { color: var(--accent); }
+  section { background: var(--carte); border: 1px solid var(--trait); border-radius: 12px;
+            padding: 12px; margin-bottom: 12px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--doux);
+       margin: 0 0 10px; }
+  label { display: block; margin-bottom: 10px; font-size: 14px; color: var(--doux); }
+  input, select, textarea { width: 100%; margin-top: 4px; padding: 11px 10px; font-size: 17px;
+    border: 1px solid var(--trait); border-radius: 9px; background: var(--fond);
+    color: var(--texte); }
+  textarea { min-height: 72px; resize: vertical; font-size: 15px; }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .coche { display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+           font-size: 15px; color: var(--texte); }
+  .coche input { width: 22px; height: 22px; margin: 0; flex: none; }
+  button { width: 100%; padding: 14px; font-size: 16px; font-weight: 600; border: 0;
+           border-radius: 10px; background: var(--accent); color: #fff; margin-bottom: 8px; }
+  button.second { background: transparent; color: var(--accent);
+                  border: 1px solid var(--accent); }
+  .avert { color: var(--alerte); font-size: 13px; margin: -6px 0 10px; }
+  ul { list-style: none; padding: 0; margin: 0; font-size: 14px; }
+  li { border-top: 1px solid var(--trait); padding: 8px 0; display: flex;
+       justify-content: space-between; gap: 8px; }
+  li:first-child { border-top: 0; }
+  li[data-id] { cursor: pointer; }
+  .attente { color: var(--alerte); }
+  .envoye { color: var(--doux); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Tournée Ouysse</h1>
+  <div class="etat" id="etat"></div>
+</header>
+
+<form id="fiche">
+  <section>
+    <h2>Repères</h2>
+    <label>Station
+      <select name="station" id="station" required>
+        <option value="Cabouy">Cabouy</option>
+        <option value="Fontbelle">Fontbelle</option>
+        <option value="Saint-Sauveur">Saint-Sauveur</option>
+        <option value="Thémines">Thémines</option>
+        <option value="Théminettes">Théminettes</option>
+        <option value="Ouysse - Calès">Ouysse - Calès</option>
+      </select>
+    </label>
+    <label>Date et heure du relevé (heure du téléphone)
+      <input type="datetime-local" name="quand" id="quand" required>
+    </label>
+    <div class="etat" id="quand_utc"></div>
+    <label>Opérateur
+      <input type="text" name="operateur" id="operateur" autocomplete="name">
+    </label>
+    <label>Dernière acquisition OTT (relevée sur la centrale)
+      <input type="datetime-local" name="ott" id="ott">
+    </label>
+    <div class="etat" id="ott_precedent"></div>
+  </section>
+
+  <section>
+    <h2>Mesures</h2>
+    <div class="duo">
+      <label>Hauteur à l'échelle (cm)
+        <input type="number" step="0.1" inputmode="decimal" name="hauteur" id="hauteur"></label>
+      <label>Niveau au repère (cm)
+        <input type="number" step="0.1" inputmode="decimal" name="repere"></label>
+      <label>Conductivité (µS/cm)
+        <input type="number" step="1" inputmode="decimal" name="conductivite" id="conductivite"></label>
+      <label>pH
+        <input type="number" step="0.01" inputmode="decimal" name="ph" id="ph"></label>
+      <label>Turbidité (NTU)
+        <input type="number" step="0.1" inputmode="decimal" name="turbidite"></label>
+      <label>O2 dissous (mg/L)
+        <input type="number" step="0.01" inputmode="decimal" name="o2" id="o2"></label>
+      <label>Chlorophylle (RFU)
+        <input type="number" step="0.01" inputmode="decimal" name="chlorophylle"></label>
+      <label>Température (°C)
+        <input type="number" step="0.01" inputmode="decimal" name="temperature" id="temperature"></label>
+    </div>
+    <div class="avert" id="avert"></div>
+  </section>
+
+  <section>
+    <h2>Contrôles</h2>
+    <div class="coche"><input type="checkbox" name="etal_cond" id="etal_cond">
+      <label for="etal_cond" style="margin:0">Étalonnage conductivité fait</label></div>
+    <div class="coche"><input type="checkbox" name="etal_hauteur" id="etal_hauteur">
+      <label for="etal_hauteur" style="margin:0">Étalonnage hauteur fait</label></div>
+    <label>Remarque
+      <textarea name="remarque" placeholder="État du site, incident, entretien..."></textarea>
+    </label>
+  </section>
+
+  <button type="submit">Enregistrer la fiche</button>
+</form>
+
+<section>
+  <h2>Fiches enregistrées</h2>
+  <ul id="liste"></ul>
+  <button class="second" id="csv" type="button">Exporter en CSV</button>
+  <button class="second" id="reglages" type="button">Configurer l'envoi</button>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>
