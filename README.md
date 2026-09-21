@@ -3,7 +3,7 @@
 Formulaire installable sur un téléphone, fonctionne **sans réseau** et envoie
 les fiches dans un tableur Google Drive dès que la connexion revient : 
 
-https://tolletg.github.io/HydroSync/
+
 
     index.html            le formulaire
     app.js                saisie, file d'attente, synchronisation, export CSV
