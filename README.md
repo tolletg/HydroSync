@@ -1,10 +1,5 @@
 # HydroSync : Saisie terrain hors ligne
 
-Application web fonctionne **sans réseau** et envoie
-les fiches dans un tableur Google Drive dès que la connexion revient : 
-
-
-
     index.html            le formulaire
     app.js                saisie, file d'attente, synchronisation, export CSV
     sw.js                 cache hors ligne
