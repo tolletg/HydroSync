@@ -1,6 +1,6 @@
 # HydroSync : Saisie terrain hors ligne
 
-Formulaire installable sur un téléphone, fonctionne **sans réseau** et envoie
+Application web fonctionne **sans réseau** et envoie
 les fiches dans un tableur Google Drive dès que la connexion revient : 
 
 
