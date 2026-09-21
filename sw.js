@@ -1,6 +1,6 @@
 // Cache des fichiers de l'application : une fois la page ouverte une premiere
 // fois avec du reseau, elle se lance ensuite sans connexion.
-const CACHE = "ouysse-tournee-v7";   // a incrementer a chaque mise a jour des fichiers
+const CACHE = "ouysse-tournee-v9";   // a incrementer a chaque mise a jour des fichiers
 const FICHIERS = ["./", "./index.html", "./app.js", "./manifest.webmanifest", "./icone.svg"];
 
 self.addEventListener("install", (e) => {
