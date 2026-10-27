@@ -47,6 +47,17 @@
   li[data-id] { cursor: pointer; }
   .attente { color: var(--alerte); }
   .envoye { color: var(--doux); }
+  dialog { display: flex; flex-direction: column; width: calc(100% - 24px); max-width: 420px;
+           max-height: 82vh; background: var(--carte); color: var(--texte);
+           border: 1px solid var(--trait); border-radius: 12px; padding: 12px; }
+  dialog:not([open]) { display: none; }   /* sans <dialog>, la fiche reste cachee */
+  dialog::backdrop { background: rgba(0, 0, 0, .5); }
+  dl { flex: 1; overflow: auto; margin: 0 0 12px; font-size: 15px; }
+  dl div { display: flex; justify-content: space-between; gap: 12px;
+           border-top: 1px solid var(--trait); padding: 7px 0; }
+  dl div:first-child { border-top: 0; }
+  dt { color: var(--doux); }
+  dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body>
@@ -125,6 +136,13 @@
   <button class="second" id="csv" type="button">Exporter en CSV</button>
   <button class="second" id="reglages" type="button">Configurer l'envoi</button>
 </section>
+
+<dialog id="detail">
+  <h2 id="detail_titre"></h2>
+  <dl id="detail_corps"></dl>
+  <button id="detail_fermer" type="button" autofocus>Fermer</button>
+  <button class="second" id="detail_renvoi" type="button">Renvoyer dans la feuille</button>
+</dialog>
 
 <script src="app.js"></script>
 </body>
