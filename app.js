@@ -14,6 +14,8 @@ const GAMMES = [["ph", 5, 9.5], ["conductivite", 100, 5000], ["o2", 0, 20],
                 ["temperature", 0, 30], ["hauteur", -50, 1000]];
 
 const $ = (id) => document.getElementById(id);
+const echap = (t) => String(t ?? "").replace(/[&<>]/g,
+  (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 const lire = (cle, defaut) => { try { return JSON.parse(localStorage.getItem(cle)) ?? defaut; }
                                 catch (e) { return defaut; } };
 const ecrire = (cle, val) => { try { localStorage.setItem(cle, JSON.stringify(val)); }
@@ -208,18 +210,61 @@ $("reglages").addEventListener("click", () => {
   synchroniser();
 });
 
-// L'envoi part seul : a l'enregistrement, au retour du reseau, au demarrage.
-// Reste le cas d'une fiche marquee envoyee sans accuse de reception, qui peut
-// n'etre jamais arrivee : la toucher dans la liste la remet en attente. Le
-// service refuse les doublons, un renvoi est sans danger.
+// Un appui sur une ligne ouvre la fiche : sur le terrain, c'est la relecture du
+// dernier releve qui sert. Les intitules et leur ordre viennent de COLONNES :
+// une seule definition pour la feuille, le CSV et la fiche ouverte. La station
+// et le jour local sont deja dans le titre ; "Correction" se remplit dans la
+// feuille, pas sur le telephone, et n'a donc rien a montrer ici.
+let ouverte = null;                    // fiche affichee, cible du renvoi
+
+function detailler(f) {
+  const rangs = COLONNES
+    .filter(([titre]) => titre !== "Station" && titre !== "Correction")
+    .map(([titre, champ]) => (champ ? [titre, f[champ]] : ["Jour (UTC)", jourUtc(f)]));
+  rangs.push(["Enregistrée le", local(new Date(f.saisie)).replace("T", " ")]);
+  rangs.push(["Envoi", f.envoye ? "envoyée" : "en attente"]);
+  return rangs.map(([titre, valeur]) => {
+    const v = (valeur === "" || valeur === null || valeur === undefined)
+      ? "—" : String(valeur).replace(/^(\d{4}-\d{2}-\d{2})T/, "$1 ");
+    return `<div><dt>${echap(titre)}</dt><dd>${echap(v)}</dd></div>`;
+  }).join("");
+}
+
+function ouvrir(fiche) {
+  ouverte = fiche;
+  $("detail_titre").textContent = `${fiche.station} · ${fiche.jour_local.replace("T", " ")}`;
+  $("detail_corps").innerHTML = detailler(fiche);
+  $("detail_renvoi").hidden = !fiche.envoye;      // une fiche en attente repart seule
+  const boite = $("detail");
+  if (boite.showModal) boite.showModal(); else boite.setAttribute("open", "");
+}
+
 $("liste").addEventListener("click", (e) => {
   const ligne = e.target.closest("li[data-id]");
   if (!ligne) return;
   const fiche = fiches.find((f) => f.id === ligne.dataset.id);
-  if (!fiche || !fiche.envoye) return;
+  if (fiche) ouvrir(fiche);
+});
+
+function fermer() {
+  const boite = $("detail");
+  if (boite.close) boite.close(); else boite.removeAttribute("open");
+  ouverte = null;
+}
+
+$("detail_fermer").addEventListener("click", fermer);
+$("detail").addEventListener("click", (e) => { if (e.target === $("detail")) fermer(); });
+
+// L'envoi part seul : a l'enregistrement, au retour du reseau, au demarrage.
+// Reste le cas d'une fiche marquee envoyee sans accuse de reception, qui peut
+// n'etre jamais arrivee : ce bouton la remet en attente. Le service refuse les
+// doublons, un renvoi est sans danger.
+$("detail_renvoi").addEventListener("click", () => {
+  if (!ouverte || !ouverte.envoye) return;
   if (!confirm("Renvoyer cette fiche dans la feuille ?")) return;
-  fiche.envoye = false;
+  ouverte.envoye = false;
   ecrire(CLE, fiches);
+  fermer();
   etat();
   synchroniser();
 });
